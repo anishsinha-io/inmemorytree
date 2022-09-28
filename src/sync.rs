@@ -9,7 +9,6 @@ pub type RwSynchronized<T> = Arc<RwLock<T>>;
 pub trait BinarySemaphoreMethods {
     fn init(state: bool) -> Self;
     fn post(&self);
-    fn value(&self) -> bool;
     fn wait(&self) -> bool;
 }
 
@@ -40,12 +39,6 @@ impl BinarySemaphoreMethods for BinarySemaphore {
         let mut state = mutex.lock();
         *state = !*state;
         condvar.notify_one();
-    }
-
-    fn value(&self) -> bool {
-        let (mutex, _) = &**self;
-        let state = mutex.lock();
-        *state
     }
 
     fn wait(&self) -> bool {
@@ -178,7 +171,7 @@ mod tests {
             }
         }
         let state = sem.wait();
-        assert!(sem.value() == true);
+        assert!(state == true);
         assert!(unsafe { (*sync_struct.data_ptr()).data } > 50);
     }
 
@@ -236,7 +229,7 @@ mod tests {
             }
         }
         let state = sem.wait();
-        assert!(sem.value() == true);
+        assert!(state == true);
         assert!(unsafe { (*rw_sync_struct.data_ptr()).data } > 50);
     }
 }
