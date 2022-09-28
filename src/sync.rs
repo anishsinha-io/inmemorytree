@@ -117,7 +117,7 @@ impl<T> RwLatch<T> for RwSynchronized<T> {
 
 #[cfg(test)]
 mod tests {
-    #![allow(unused)]
+    // #![allow(unused)]
     use rayon::ThreadPoolBuilder;
 
     use super::{
@@ -128,15 +128,8 @@ mod tests {
         data: usize,
     }
 
-    impl TestStruct {
-        fn new() -> Self {
-            Self { data: 0 }
-        }
-    }
-
     fn check_thread(sync: &Synchronized<TestStruct>, sem: &BinarySemaphore) {
         loop {
-            let (mutex, condvar) = &**sem;
             sync.latch();
             let inner = sync.data_ptr();
             let x = unsafe { (*inner).data };
@@ -159,7 +152,7 @@ mod tests {
     #[test]
     fn test_binary_semaphore_and_latch() {
         let sem = BinarySemaphore::init(false);
-        let mut sync_struct = Synchronized::init(TestStruct { data: 0 });
+        let sync_struct = Synchronized::init(TestStruct { data: 0 });
         let pool = ThreadPoolBuilder::new().num_threads(8).build().unwrap();
         for i in 0..8 {
             let sync_struct = sync_struct.clone();
@@ -215,7 +208,7 @@ mod tests {
     #[test]
     fn test_rwlatch() {
         let sem = BinarySemaphore::init(false);
-        let mut rw_sync_struct = RwSynchronized::init(TestStruct { data: 0 });
+        let rw_sync_struct = RwSynchronized::init(TestStruct { data: 0 });
         let pool = ThreadPoolBuilder::new().num_threads(20).build().unwrap();
         for i in 0..20 {
             let rw_sync_struct = rw_sync_struct.clone();
