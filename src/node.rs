@@ -132,6 +132,9 @@ where
 
 #[cfg(test)]
 mod tests {
+    #[allow(unused)]
+    use rayon::ThreadPoolBuilder;
+
     use super::{BTreeNode, Node};
 
     #[test]
@@ -187,5 +190,11 @@ mod tests {
 
         assert!(inner.right_link.is_none());
         assert!(inner.out_link.is_none());
+    }
+
+    #[test]
+    fn test_concurrent_update() {
+        let pool = ThreadPoolBuilder::new().num_threads(20).build().unwrap();
+        let node: Node<usize> = Node::create(2);
     }
 }
