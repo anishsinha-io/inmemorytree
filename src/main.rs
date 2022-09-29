@@ -1,3 +1,4 @@
+mod node;
 mod sync;
 mod tree;
 fn main() {
